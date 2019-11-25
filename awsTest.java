@@ -177,10 +177,10 @@ public static void availableregions(){
 public static void stopinstance(String instance_id){
 	StopInstancesRequest request = new StopInstancesRequest()
             .withInstanceIds(instance_id);
-	try{	//instance실행
+	try{	//instance중지
         ec2.stopInstances(request);
 	  System.out.printf("instance_id :"+instance_id+" is successfully stop");
-	}catch (Exception e){	//실행을 못하면 ex) instance_id를 잘못 입력함.
+	}catch (Exception e){	
 		 System.out.printf("instance_id("+instance_id+")stop is failed");
 	}
 }
@@ -191,7 +191,13 @@ public static void createinstance(String ami_id ){
 
 //menu7
 public static void rebootinstance(String instance_id){
-
+	RebootInstancesRequest request = new RebootInstancesRequest().withInstanceIds(instance_id);
+	try{	//instance리부트
+        ec2.rebootInstances(request);
+	  System.out.printf("instance_id :"+instance_id+" is successfully reboot");
+	}catch (Exception e){	
+		 System.out.printf("instance_id("+instance_id+")reboot is failed");
+	}
 }
 
 //menu8
