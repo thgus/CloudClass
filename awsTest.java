@@ -8,10 +8,20 @@ import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.StartInstancesRequest;
+import com.amazonaws.services.ec2.model.StopInstancesRequest;
+import com.amazonaws.services.ec2.model.RunInstancesRequest;
+import com.amazonaws.services.ec2.model.RunInstancesResult;
+import com.amazonaws.services.ec2.model.RebootInstancesRequest;
+import com.amazonaws.services.ec2.model.RebootInstancesResult;
+import com.amazonaws.services.ec2.model.InstanceType;
+import com.amazonaws.services.ec2.model.DryRunResult;
+import com.amazonaws.services.ec2.model.DryRunSupportedRequest;
 
 import java.util.Scanner;
-
 import java.util.List;
+import java.util.Scanner;
+
 
 public class awsTest {
 /*
@@ -52,6 +62,7 @@ public static void main(String[] args) throws Exception {
 	Scanner menu = new Scanner(System.in);
 	Scanner id_string = new Scanner(System.in);
 	int number = 0;
+	String id;
 	
 	while(true)
 	{
@@ -81,19 +92,27 @@ public static void main(String[] args) throws Exception {
 				availablezones();
 				break;
 			case 3:
-				startinstance();
+				System.out.print("Enter instance_id: ");
+				id=id_string.nextLine();
+				startInstance(id);
 				break;
 			case 4:
 				availableregions();
 				break;
 			case 5:
-				stopinstance();
+				System.out.print("Enter instance_id: ");
+				id=id_string.nextLine();
+				stopinstance(id);
 				break;
 			case 6:
-				createinstance();
+				System.out.print("Enter img_id: ");
+				id=id_string.nextLine();
+				createinstance(id);
 				break;
 			case 7:
-				rebootinstance();
+				System.out.print("Enter instance_id: ");
+				id=id_string.nextLine();
+				rebootinstance(id);
 				break;
 			case 8:
 				listimages();
@@ -140,7 +159,13 @@ public static void availablezones(){
 }
 
 //menu3
-public static void startinstance(){
+public static void startInstance(String instance_id){
+	StartInstancesRequest request = new StartInstancesRequest().withInstanceIds(instance_id);
+	try{	//instance실행
+		ec2.startInstances(request);
+	}catch (Exception e){	//실행을 못하면 ex) instance_id를 잘못 입력함.
+		 System.out.printf("instance_id :"+instance_id+" is failed");
+	}
 }
 
 //menu4
@@ -148,15 +173,17 @@ public static void availableregions(){
 }
 
 //menu5
-public static void stopinstance(){
+public static void stopinstance(String instance_id){
+final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();
 }
 
 //menu6
-public static void createinstance(){
+public static void createinstance(String ami_id ){
 }
 
 //menu7
-public static void rebootinstance(){
+public static void rebootinstance(String instance_id){
+
 }
 
 //menu8
