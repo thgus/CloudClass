@@ -15,8 +15,10 @@ import com.amazonaws.services.ec2.model.RunInstancesResult;
 import com.amazonaws.services.ec2.model.RebootInstancesRequest;
 import com.amazonaws.services.ec2.model.RebootInstancesResult;
 import com.amazonaws.services.ec2.model.InstanceType;
-import com.amazonaws.services.ec2.model.DryRunResult;
-import com.amazonaws.services.ec2.model.DryRunSupportedRequest;
+import com.amazonaws.services.ec2.model.DescribeRegionsResult;
+import com.amazonaws.services.ec2.model.Region;
+import com.amazonaws.services.ec2.model.AvailabilityZone;
+import com.amazonaws.services.ec2.model.DescribeAvailabilityZonesResult;
 
 import java.util.Scanner;
 import java.util.List;
@@ -156,6 +158,19 @@ public static void listInstances(){
 
 //menu2
 public static void availablezones(){
+	System.out.println("Listing zones....");
+	DescribeAvailabilityZonesResult zones_response = ec2.describeAvailabilityZones();
+
+	for(AvailabilityZone zone : zones_response.getAvailabilityZones()) {
+    		System.out.printf(
+     		   "[id] %s	" +
+    			"[region] %s	" +
+			"[zone] %s\n",
+		      zone.getZoneId(),
+			zone.getRegionName(),		      
+			zone.getZoneName());
+	}
+
 }
 
 //menu3
@@ -171,6 +186,16 @@ public static void startInstance(String instance_id){
 
 //menu4
 public static void availableregions(){
+	System.out.println("Listing regions....");
+	DescribeRegionsResult regions_response = ec2.describeRegions();
+	for(Region region : regions_response.getRegions()) {
+	    System.out.printf(
+	        "[region] %s	" +
+	        "[endpoint] %s\n",
+	        region.getRegionName(),
+	        region.getEndpoint()
+		);
+	}
 }
 
 //menu5
@@ -206,6 +231,8 @@ public static void listimages(){
 
 //menu99
 public static void quitmenu(){
+	System.out.printf("quit\n bye bye :)\n");
+	System.exit(0);
 }
 
 
