@@ -163,8 +163,9 @@ public static void startInstance(String instance_id){
 	StartInstancesRequest request = new StartInstancesRequest().withInstanceIds(instance_id);
 	try{	//instance실행
 		ec2.startInstances(request);
+		System.out.printf("instance_id :"+instance_id+" is successfully start");
 	}catch (Exception e){	//실행을 못하면 ex) instance_id를 잘못 입력함.
-		 System.out.printf("instance_id :"+instance_id+" is failed");
+		 System.out.printf("instance_id("+instance_id+")start is failed");
 	}
 }
 
@@ -174,7 +175,14 @@ public static void availableregions(){
 
 //menu5
 public static void stopinstance(String instance_id){
-final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();
+	StopInstancesRequest request = new StopInstancesRequest()
+            .withInstanceIds(instance_id);
+	try{	//instance실행
+        ec2.stopInstances(request);
+	  System.out.printf("instance_id :"+instance_id+" is successfully stop");
+	}catch (Exception e){	//실행을 못하면 ex) instance_id를 잘못 입력함.
+		 System.out.printf("instance_id("+instance_id+")stop is failed");
+	}
 }
 
 //menu6
