@@ -19,10 +19,11 @@ import com.amazonaws.services.ec2.model.DescribeRegionsResult;
 import com.amazonaws.services.ec2.model.Region;
 import com.amazonaws.services.ec2.model.AvailabilityZone;
 import com.amazonaws.services.ec2.model.DescribeAvailabilityZonesResult;
-
 import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.DescribeImagesRequest;
+import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
+import com.amazonaws.services.ec2.model.CreateKeyPairResult;
 
 import java.util.Scanner;
 import java.util.List;
@@ -67,8 +68,10 @@ public static void main(String[] args) throws Exception {
 	
 	Scanner menu = new Scanner(System.in);
 	Scanner id_string = new Scanner(System.in);
+	Scanner name_string = new Scanner(System.in);
 	int number = 0;
 	String id;
+	String name;
 	
 	while(true)
 	{
@@ -84,6 +87,7 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" 3. start instance		4. available regions		");
 		System.out.println(" 5. stop instance		6. create instance		");
 		System.out.println(" 7. reboot instance		8. list images			");
+		System.out.println(" 9. create keypair						");
 		System.out.println(" 99. quit							");
 		System.out.println("------------------------------------------------------------");
 	
@@ -123,8 +127,16 @@ public static void main(String[] args) throws Exception {
 			case 8:
 				listimages();
 				break;
+			case 9:
+				System.out.print("Enter KeyName: ");
+				name=name_string.nextLine();
+				CreateKeyPair(name);
+				break;	
 			case 99:
 				quitmenu();
+				break;
+			default:
+				System.out.print("try again!\n");
 				break;
 		}
 	}
@@ -273,7 +285,19 @@ public static void listimages(){
 			System.out.println("No images found");	
 		}
 	}catch (Exception e){
-		System.out.printf("imagge listing is failed");
+		System.out.printf("image listing is failed");
+	}
+}
+
+public static void CreateKeyPair(String name) {
+	try{	
+	CreateKeyPairRequest request = new CreateKeyPairRequest()
+            .withKeyName(name);
+
+        CreateKeyPairResult response = ec2.createKeyPair(request);
+        System.out.printf("Successfully created key pair named %s",name);
+	}catch(Exception e){
+		System.out.printf("create keypair is failed");	
 	}
 }
 
