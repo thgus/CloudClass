@@ -26,6 +26,8 @@ import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
 import com.amazonaws.services.ec2.model.CreateKeyPairResult;
 import com.amazonaws.services.ec2.model.DeleteKeyPairRequest;
 import com.amazonaws.services.ec2.model.DeleteKeyPairResult;
+import com.amazonaws.services.ec2.model.MonitorInstancesRequest;
+import com.amazonaws.services.ec2.model.UnmonitorInstancesRequest;
 
 import java.util.Scanner;
 import java.util.List;
@@ -89,7 +91,8 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" 3. start instance		4. available regions		");
 		System.out.println(" 5. stop instance		6. create instance		");
 		System.out.println(" 7. reboot instance		8. list images			");
-		System.out.println(" 9. create keypair		10.DeleteKeyPair			");
+		System.out.println(" 9. create keypair		10. DeleteKeyPair			");
+		System.out.println(" 11. monitor instance		12. unmonitor instance		");
 		System.out.println(" 99. quit									");
 		System.out.println("-------------------------------------------------------------");
 	
@@ -138,6 +141,16 @@ public static void main(String[] args) throws Exception {
 				System.out.print("Enter KeyName: ");
 				name=name_string.nextLine();
 				DeleteKeyPair(name);
+				break;
+			case 11:
+				System.out.print("Enter instance_id: ");
+				id=id_string.nextLine();
+				monitorInstance(id);
+				break;
+			case 12:
+				System.out.print("Enter instance_id: ");
+				id=id_string.nextLine();
+				unmonitorInstance(id);
 				break;	
 			case 99:
 				quitmenu();
@@ -322,12 +335,36 @@ public static void DeleteKeyPair(String name) {
         System.out.printf("Successfully deleted key pair named %s",name);
 	}
 	else{
-	  System.out.printf("delet keypair if failed : %s ",name);
+	  System.out.printf("delet keypair if failed : (name) %s ",name);
 	}
 	}catch(Exception e){
-		System.out.printf("delete keypair is failed : %s", name);	
+		System.out.printf("delete keypair is failed : (name) %s", name);	
 	}
 }
+
+//menu11
+public static void monitorInstance(String id){
+try{
+	MonitorInstancesRequest request = new MonitorInstancesRequest()
+                .withInstanceIds(id);
+	ec2.monitorInstances(request);
+      System.out.printf( "Successfully enabled monitoring for instance %s",id);
+}catch(Exception e){
+	System.out.printf("monitoring is failed : (id) %s", id);
+}
+} 
+
+//menu12
+public static void unmonitorInstance(String id){
+try{
+	UnmonitorInstancesRequest request = new UnmonitorInstancesRequest()
+            .withInstanceIds(id);
+	ec2.unmonitorInstances(request);
+	System.out.printf( "Successfully disabled monitoring for instance %s", id);
+}catch(Exception e){
+	System.out.printf("disable monitor is failed : (id) %s", id);
+}
+} 
 
 //menu99
 public static void quitmenu(){
