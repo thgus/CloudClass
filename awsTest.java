@@ -215,8 +215,26 @@ public static void stopinstance(String instance_id){
 }
 
 //menu6
-public static void createinstance(String ami_id ){
-	
+public static void createinstance(String ami_id){
+
+String reservation_id=null;
+RunInstancesResult run_response;
+RunInstancesRequest run_request;
+
+try{
+run_request = new RunInstancesRequest()
+    .withImageId(ami_id)
+    .withInstanceType(InstanceType.T2Micro)
+    .withMaxCount(1)
+    .withMinCount(1);
+
+run_response = ec2.runInstances(run_request);
+reservation_id = run_response.getReservation().getInstances().get(0).getInstanceId();
+
+System.out.printf("Successfully started EC2 instance %s based on AMI %s\n",reservation_id, ami_id);
+}catch (Exception e){
+	System.out.printf("createInstance is failed\n");
+}
 }
 
 //menu7
@@ -238,20 +256,24 @@ public static void listimages(){
 	request.withOwners("self");
 	DescribeImagesResult response=ec2.describeImages(request);	
 	
-	if(response != null){
-		for(Image image : response.getImages()){
-    			System.out.printf(
-     			   "[id] %s	" +
-    				"[Location] %s	" +
-				"[type] %s	"+
-				"[date] %s\n",
-			      image.getImageId(),
-				image.getImageLocation(),
-				image.getImageType(),		      
-				image.getCreationDate());
+	try{
+		if(response != null){
+			for(Image image : response.getImages()){
+    				System.out.printf(
+     				   "[id] %s	" +
+    					"[Location] %s	" +
+					"[type] %s	"+
+					"[date] %s\n",
+				      image.getImageId(),
+					image.getImageLocation(),
+					image.getImageType(),		      
+					image.getCreationDate());
+			}
+		}else{
+			System.out.println("No images found");	
 		}
-	}else{
-		System.out.println("No images found");	
+	}catch (Exception e){
+		System.out.printf("imagge listing is failed");
 	}
 }
 
