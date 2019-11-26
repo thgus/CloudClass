@@ -30,6 +30,7 @@ import com.amazonaws.services.ec2.model.MonitorInstancesRequest;
 import com.amazonaws.services.ec2.model.UnmonitorInstancesRequest;
 import com.amazonaws.services.ec2.model.KeyPairInfo;
 import com.amazonaws.services.ec2.model.DescribeKeyPairsResult;
+import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 
 import java.util.Scanner;
 import java.util.List;
@@ -95,7 +96,7 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" 7. reboot instance		8. list images			");
 		System.out.println(" 9. create keypair		10. Delete Keypair		");
 		System.out.println(" 11. monitor instance		12. unmonitor instance		");
-		System.out.println(" 13. list Keypair				");
+		System.out.println(" 13. list Keypair		14. teminate instance		");
 		System.out.println(" 99. quit									");
 		System.out.println("-------------------------------------------------------------");
 	
@@ -158,6 +159,11 @@ public static void main(String[] args) throws Exception {
 			case 13:
 				DescribeKeyPairs();
 				break;	
+			case 14:
+				System.out.print("Enter instance_id: ");
+				id=id_string.nextLine();
+				terminateInstance(id);
+				break;
 			case 99:
 				quitmenu();
 				break;
@@ -382,6 +388,17 @@ public static void DescribeKeyPairs(){
                 key_pair.getKeyName(),
                 key_pair.getKeyFingerprint());
         }
+}
+
+//menu14
+public static void terminateInstance(String instance_id) {
+	TerminateInstancesRequest request = new TerminateInstancesRequest().withInstanceIds(instance_id);
+	try{	//instance 종료
+        ec2.terminateInstances(request);
+	  System.out.printf("instance_id :"+instance_id+" is successfully terminate");
+	}catch (Exception e){	
+		 System.out.printf("instance_id("+instance_id+")stop is failed");
+	}
 }
 
 //menu99
