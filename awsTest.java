@@ -28,6 +28,8 @@ import com.amazonaws.services.ec2.model.DeleteKeyPairRequest;
 import com.amazonaws.services.ec2.model.DeleteKeyPairResult;
 import com.amazonaws.services.ec2.model.MonitorInstancesRequest;
 import com.amazonaws.services.ec2.model.UnmonitorInstancesRequest;
+import com.amazonaws.services.ec2.model.KeyPairInfo;
+import com.amazonaws.services.ec2.model.DescribeKeyPairsResult;
 
 import java.util.Scanner;
 import java.util.List;
@@ -91,8 +93,9 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" 3. start instance		4. available regions		");
 		System.out.println(" 5. stop instance		6. create instance		");
 		System.out.println(" 7. reboot instance		8. list images			");
-		System.out.println(" 9. create keypair		10. DeleteKeyPair			");
+		System.out.println(" 9. create keypair		10. Delete Keypair		");
 		System.out.println(" 11. monitor instance		12. unmonitor instance		");
+		System.out.println(" 13. list Keypair				");
 		System.out.println(" 99. quit									");
 		System.out.println("-------------------------------------------------------------");
 	
@@ -151,6 +154,9 @@ public static void main(String[] args) throws Exception {
 				System.out.print("Enter instance_id: ");
 				id=id_string.nextLine();
 				unmonitorInstance(id);
+				break;
+			case 13:
+				DescribeKeyPairs();
 				break;	
 			case 99:
 				quitmenu();
@@ -365,6 +371,18 @@ try{
 	System.out.printf("disable monitor is failed : (id) %s", id);
 }
 } 
+
+//menu13
+public static void DescribeKeyPairs(){
+	DescribeKeyPairsResult response = ec2.describeKeyPairs();
+        for(KeyPairInfo key_pair : response.getKeyPairs()) {
+            System.out.printf(
+                "[name]	%s " +
+                "[fingerprint]	%s\n",
+                key_pair.getKeyName(),
+                key_pair.getKeyFingerprint());
+        }
+}
 
 //menu99
 public static void quitmenu(){
