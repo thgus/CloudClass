@@ -24,6 +24,8 @@ import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.DescribeImagesRequest;
 import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
 import com.amazonaws.services.ec2.model.CreateKeyPairResult;
+import com.amazonaws.services.ec2.model.DeleteKeyPairRequest;
+import com.amazonaws.services.ec2.model.DeleteKeyPairResult;
 
 import java.util.Scanner;
 import java.util.List;
@@ -75,21 +77,21 @@ public static void main(String[] args) throws Exception {
 	
 	while(true)
 	{
-		System.out.println("								");
-		System.out.println("								");
-		System.out.println("------------------------------------------------------------");
-		System.out.println("	Amazon AWS Control Panel using SDK			");
-		System.out.println("								");
-		System.out.println(" Cloud Computing, Computer Science Department		");
-		System.out.println("				at Chungbuk National University ");
-		System.out.println("------------------------------------------------------------");
+		System.out.println("										");
+		System.out.println("										");
+		System.out.println("-------------------------------------------------------------");
+		System.out.println("	Amazon AWS Control Panel using SDK				");
+		System.out.println("										");
+		System.out.println(" Cloud Computing, Computer Science Department			");
+		System.out.println("				at Chungbuk National University 	");
+		System.out.println("-------------------------------------------------------------");
 		System.out.println(" 1. list instance		2. available zones		");
 		System.out.println(" 3. start instance		4. available regions		");
 		System.out.println(" 5. stop instance		6. create instance		");
 		System.out.println(" 7. reboot instance		8. list images			");
-		System.out.println(" 9. create keypair						");
-		System.out.println(" 99. quit							");
-		System.out.println("------------------------------------------------------------");
+		System.out.println(" 9. create keypair		10.DeleteKeyPair			");
+		System.out.println(" 99. quit									");
+		System.out.println("-------------------------------------------------------------");
 	
 		System.out.print("Enter an integer: ");
 		number=menu.nextInt();
@@ -131,6 +133,11 @@ public static void main(String[] args) throws Exception {
 				System.out.print("Enter KeyName: ");
 				name=name_string.nextLine();
 				CreateKeyPair(name);
+				break;
+			case 10:
+				System.out.print("Enter KeyName: ");
+				name=name_string.nextLine();
+				DeleteKeyPair(name);
 				break;	
 			case 99:
 				quitmenu();
@@ -288,7 +295,7 @@ public static void listimages(){
 		System.out.printf("image listing is failed");
 	}
 }
-
+//menu9
 public static void CreateKeyPair(String name) {
 	try{	
 	CreateKeyPairRequest request = new CreateKeyPairRequest()
@@ -298,6 +305,27 @@ public static void CreateKeyPair(String name) {
         System.out.printf("Successfully created key pair named %s",name);
 	}catch(Exception e){
 		System.out.printf("create keypair is failed");	
+	}
+}
+
+//menu10
+public static void DeleteKeyPair(String name) {
+	Scanner scanner = new Scanner(System.in);
+	String opinion;
+	try{	
+	 System.out.printf("Do you really want to erase it? (y,n)");
+	opinion=scanner.nextLine();
+	if(opinion=="y"){
+	 DeleteKeyPairRequest request = new DeleteKeyPairRequest()
+            .withKeyName(name);
+        DeleteKeyPairResult response = ec2.deleteKeyPair(request);
+        System.out.printf("Successfully deleted key pair named %s",name);
+	}
+	else{
+	  System.out.printf("delet keypair if failed : %s ",name);
+	}
+	}catch(Exception e){
+		System.out.printf("delete keypair is failed : %s", name);	
 	}
 }
 
