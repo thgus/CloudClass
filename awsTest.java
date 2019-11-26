@@ -20,6 +20,10 @@ import com.amazonaws.services.ec2.model.Region;
 import com.amazonaws.services.ec2.model.AvailabilityZone;
 import com.amazonaws.services.ec2.model.DescribeAvailabilityZonesResult;
 
+import com.amazonaws.services.ec2.model.Image;
+import com.amazonaws.services.ec2.model.DescribeImagesResult;
+import com.amazonaws.services.ec2.model.DescribeImagesRequest;
+
 import java.util.Scanner;
 import java.util.List;
 import java.util.Scanner;
@@ -212,6 +216,7 @@ public static void stopinstance(String instance_id){
 
 //menu6
 public static void createinstance(String ami_id ){
+	
 }
 
 //menu7
@@ -227,6 +232,27 @@ public static void rebootinstance(String instance_id){
 
 //menu8
 public static void listimages(){
+	System.out.println("Listing images....");
+	
+	DescribeImagesRequest request = new DescribeImagesRequest();
+	request.withOwners("self");
+	DescribeImagesResult response=ec2.describeImages(request);	
+	
+	if(response != null){
+		for(Image image : response.getImages()){
+    			System.out.printf(
+     			   "[id] %s	" +
+    				"[Location] %s	" +
+				"[type] %s	"+
+				"[date] %s\n",
+			      image.getImageId(),
+				image.getImageLocation(),
+				image.getImageType(),		      
+				image.getCreationDate());
+		}
+	}else{
+		System.out.println("No images found");	
+	}
 }
 
 //menu99
