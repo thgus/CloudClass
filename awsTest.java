@@ -33,6 +33,8 @@ import com.amazonaws.services.ec2.model.DescribeKeyPairsResult;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 import com.amazonaws.services.ec2.model.CreateImageRequest;
 import com.amazonaws.services.ec2.model.CreateImageResult;
+import com.amazonaws.services.ec2.model.DeregisterImageRequest;
+import com.amazonaws.services.ec2.model.DeregisterImageResult;
 
 import java.util.Scanner;
 import java.util.List;
@@ -99,7 +101,7 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" 9. create keypair		10. Delete Keypair		");
 		System.out.println(" 11. monitor instance		12. unmonitor instance		");
 		System.out.println(" 13. list Keypair		14. terminate instance		");
-		System.out.println(" 15. create image		 		");
+		System.out.println(" 15. create image		16. delete image	 		");
 		System.out.println(" 					99. quit				");
 		System.out.println("-------------------------------------------------------------");
 	
@@ -170,9 +172,14 @@ public static void main(String[] args) throws Exception {
 			case 15:
 				System.out.print("Enter instance_id: ");
 				id=id_string.nextLine();
-				System.out.print("Enter Name: ");
+				System.out.print("Enter ImageName: ");
 				name=name_string.nextLine();
 				createImage(id,name);
+				break;
+			case 16:
+				System.out.print("Enter image_id: ");
+				id=id_string.nextLine();
+				deleteImage(id);
 				break;
 			case 99:
 				quitmenu();
@@ -346,11 +353,11 @@ public static void CreateKeyPair(String name) {
 //menu10
 public static void DeleteKeyPair(String name) {
 	Scanner scanner = new Scanner(System.in);
-	String opinion;
+	int opinion;
 	try{	
-	 System.out.printf("Do you really want to erase it? (y,n)");
-	opinion=scanner.nextLine();
-	if(opinion=="y"){
+	 System.out.printf("Do you really want to erase it? (yes :1 ,No :2) ");
+	opinion=scanner.nextInt();
+	if(opinion==1){
 	 DeleteKeyPairRequest request = new DeleteKeyPairRequest()
             .withKeyName(name);
         DeleteKeyPairResult response = ec2.deleteKeyPair(request);
@@ -423,6 +430,27 @@ public static void createImage(String instance_id,String name){
 	}catch(Exception e){
 		System.out.printf("create image is failed");	
 	}
+}
+
+//menu 16
+public static void deleteImage(String id){
+	Scanner scanner = new Scanner(System.in);
+	int opinion;
+	//try{	
+		System.out.printf("Do you really want to erase it? (yes :1 ,No :2) ");
+		opinion=scanner.nextInt();
+		if(opinion==1){
+			 DeregisterImageRequest request = new DeregisterImageRequest()
+            		.withImageId(id);
+        		DeregisterImageResult response = ec2.deregisterImage(request);
+        		System.out.printf("Successfully deleted image. named %s",id);
+		}
+		else{
+	  		System.out.printf("delet image if failed : (name) %s ",id);
+		}
+	//}catch(Exception e){
+	//	System.out.printf("delete image is failed : (name) %s", name);	
+	//}
 }
 
 //menu99
