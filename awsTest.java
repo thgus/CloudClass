@@ -31,6 +31,8 @@ import com.amazonaws.services.ec2.model.UnmonitorInstancesRequest;
 import com.amazonaws.services.ec2.model.KeyPairInfo;
 import com.amazonaws.services.ec2.model.DescribeKeyPairsResult;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
+import com.amazonaws.services.ec2.model.CreateImageRequest;
+import com.amazonaws.services.ec2.model.CreateImageResult;
 
 import java.util.Scanner;
 import java.util.List;
@@ -96,8 +98,9 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" 7. reboot instance		8. list images			");
 		System.out.println(" 9. create keypair		10. Delete Keypair		");
 		System.out.println(" 11. monitor instance		12. unmonitor instance		");
-		System.out.println(" 13. list Keypair		14. teminate instance		");
-		System.out.println(" 99. quit									");
+		System.out.println(" 13. list Keypair		14. terminate instance		");
+		System.out.println(" 15. create image		 		");
+		System.out.println(" 					99. quit				");
 		System.out.println("-------------------------------------------------------------");
 	
 		System.out.print("Enter an integer: ");
@@ -163,6 +166,13 @@ public static void main(String[] args) throws Exception {
 				System.out.print("Enter instance_id: ");
 				id=id_string.nextLine();
 				terminateInstance(id);
+				break;
+			case 15:
+				System.out.print("Enter instance_id: ");
+				id=id_string.nextLine();
+				System.out.print("Enter Name: ");
+				name=name_string.nextLine();
+				createImage(id,name);
 				break;
 			case 99:
 				quitmenu();
@@ -380,6 +390,8 @@ try{
 
 //menu13
 public static void DescribeKeyPairs(){
+	System.out.println("Listing keyPair....");
+
 	DescribeKeyPairsResult response = ec2.describeKeyPairs();
         for(KeyPairInfo key_pair : response.getKeyPairs()) {
             System.out.printf(
@@ -398,6 +410,18 @@ public static void terminateInstance(String instance_id) {
 	  System.out.printf("instance_id :"+instance_id+" is successfully terminate");
 	}catch (Exception e){	
 		 System.out.printf("instance_id("+instance_id+")stop is failed");
+	}
+}
+
+//menu15
+public static void createImage(String instance_id,String name){
+	try{	
+	CreateImageRequest request = new CreateImageRequest(instance_id, name);
+
+      CreateImageResult response = ec2.createImage(request);
+        System.out.printf("Successfully created image [name] %s ",name);
+	}catch(Exception e){
+		System.out.printf("create image is failed");	
 	}
 }
 
