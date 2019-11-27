@@ -19,6 +19,15 @@ import com.amazonaws.services.ec2.model.RebootInstancesResult;
 import com.amazonaws.services.ec2.model.MonitorInstancesRequest;
 import com.amazonaws.services.ec2.model.UnmonitorInstancesRequest;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
+//tag
+import com.amazonaws.services.ec2.model.Tag;
+import com.amazonaws.services.ec2.model.TagDescription;
+import com.amazonaws.services.ec2.model.CreateTagsRequest;
+import com.amazonaws.services.ec2.model.CreateTagsResult;
+import com.amazonaws.services.ec2.model.DescribeTagsRequest;
+import com.amazonaws.services.ec2.model.DescribeTagsResult;
+import com.amazonaws.services.ec2.model.DeleteTagsRequest;
+import com.amazonaws.services.ec2.model.DeleteTagsResult;
 //region, zone
 import com.amazonaws.services.ec2.model.DescribeRegionsResult;
 import com.amazonaws.services.ec2.model.Region;
@@ -108,6 +117,8 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" 15. create image		16. delete image	 		");
 		System.out.println(" 17. list address		18. list security group 		");
 		System.out.println(" 19. create security group	20. delete security group 	");
+		System.out.println(" 21. create tag			22. List tag 			");
+		System.out.println(" 23. delete tag						");
 		System.out.println(" 					99. quit				");
 		System.out.println("-------------------------------------------------------------");
 	
@@ -200,6 +211,23 @@ public static void main(String[] args) throws Exception {
 				System.out.print("Enter SecurityGroup_id: ");
 				id=id_string.nextLine();
 				deleteSecurityGroup(id);
+				break;
+			case 21:
+				System.out.print("Enter TagName: ");
+				name=name_string.nextLine();
+				System.out.print("Enter resource id: ");
+				id=id_string.nextLine();
+				createTag(name, id);
+				break;
+			case 22:
+				describeTags();
+				break;
+			case 23:
+				System.out.print("Enter resource id: ");
+				id=id_string.nextLine();
+				System.out.print("Enter TagName: ");
+				name=name_string.nextLine();
+				deleteTags(id, name);
 				break;
 			case 99:
 				quitmenu();
@@ -524,6 +552,7 @@ public static void createSecurityGroup(){
               							 .withDescription(desc)
       	     							 .withVpcId(id);
         CreateSecurityGroupResult create_response = ec2.createSecurityGroup(create_request);
+		System.out.printf("Successfully created security group. (name) %s",name);
 	} catch (Exception e){
 		System.out.printf("create security group is failed : (name) %s", name);	
 	}
@@ -549,6 +578,68 @@ public static void deleteSecurityGroup(String id){
 		System.out.printf("delete security group is failed : (id) %s", id);	
 	}
 }
+
+//menu21
+public static void createTag(String name, String id){
+	try{
+	Tag tag = new Tag()
+            .withKey("Name")
+            .withValue(name);
+
+        CreateTagsRequest tag_request = new CreateTagsRequest()
+            					.withResources(id)
+            					.withTags(tag);
+        CreateTagsResult tag_response = ec2.createTags(tag_request);
+
+        System.out.printf(
+            "Successfully createTag (name) %s ",name);	
+	}catch(Exception e){
+		System.out.printf("create tag is failed : (name) %s", name);
+	}
+}
+
+//menu22
+public static void describeTags(){
+	System.out.println("Listing Tags....");
+
+	DescribeTagsRequest request = new DescribeTagsRequest();
+	DescribeTagsResult response = ec2.describeTags(request);
+
+	for(TagDescription tag : response.getTags()) {
+            System.out.printf(
+                "[id] %s," +
+		    "[Key] %s," +
+                "[value] %s\n",
+	          tag.getResourceId(),
+                tag.getKey(),
+                tag.getValue());
+        }
+}	
+
+//menu23
+public static void deleteTags(String id, String name){
+	Scanner scanner = new Scanner(System.in);
+	int opinion;
+	try{	
+		System.out.printf("Do you really want to erase it? (yes :1 ,No :2) ");
+		opinion=scanner.nextInt();
+		if(opinion==1){
+			Tag tag = new Tag()
+            			.withKey("Name")
+          			  	.withValue(name);
+     		   DeleteTagsRequest request = new DeleteTagsRequest()
+         						   .withResources(id)
+         						   .withTags(tag);
+     		   DeleteTagsResult response = ec2.deleteTags(request);
+        		System.out.printf("Successfully deleted tag. id %s",id);
+		}
+		else{
+	  		System.out.printf("delete tag is failed : (id) %s ",id);
+		}
+	}catch(Exception e){
+		System.out.printf("delete tag is failed : (id) %s", id);	
+	}
+}	
 
 //menu99
 public static void quitmenu(){
