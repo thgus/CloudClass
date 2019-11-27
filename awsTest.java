@@ -35,6 +35,8 @@ import com.amazonaws.services.ec2.model.CreateImageRequest;
 import com.amazonaws.services.ec2.model.CreateImageResult;
 import com.amazonaws.services.ec2.model.DeregisterImageRequest;
 import com.amazonaws.services.ec2.model.DeregisterImageResult;
+import com.amazonaws.services.ec2.model.Address;
+import com.amazonaws.services.ec2.model.DescribeAddressesResult;
 
 import java.util.Scanner;
 import java.util.List;
@@ -102,6 +104,7 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" 11. monitor instance		12. unmonitor instance		");
 		System.out.println(" 13. list Keypair		14. terminate instance		");
 		System.out.println(" 15. create image		16. delete image	 		");
+		System.out.println(" 17. describe address			 		");
 		System.out.println(" 					99. quit				");
 		System.out.println("-------------------------------------------------------------");
 	
@@ -180,6 +183,9 @@ public static void main(String[] args) throws Exception {
 				System.out.print("Enter image_id: ");
 				id=id_string.nextLine();
 				deleteImage(id);
+				break;
+			case 17:
+				describeAddresses();
 				break;
 			case 99:
 				quitmenu();
@@ -436,21 +442,39 @@ public static void createImage(String instance_id,String name){
 public static void deleteImage(String id){
 	Scanner scanner = new Scanner(System.in);
 	int opinion;
-	//try{	
+	try{	
 		System.out.printf("Do you really want to erase it? (yes :1 ,No :2) ");
 		opinion=scanner.nextInt();
 		if(opinion==1){
 			 DeregisterImageRequest request = new DeregisterImageRequest()
             		.withImageId(id);
         		DeregisterImageResult response = ec2.deregisterImage(request);
-        		System.out.printf("Successfully deleted image. named %s",id);
+        		System.out.printf("Successfully deleted image. id %s",id);
 		}
 		else{
-	  		System.out.printf("delet image if failed : (name) %s ",id);
+	  		System.out.printf("delet image if failed : (id) %s ",id);
 		}
-	//}catch(Exception e){
-	//	System.out.printf("delete image is failed : (name) %s", name);	
-	//}
+	}catch(Exception e){
+		System.out.printf("delete image is failed : (id) %s", id);	
+	}
+}
+
+//menu 17
+public static void describeAddresses(){
+	System.out.println("Listing Addresses....");
+	DescribeAddressesResult response = ec2.describeAddresses();
+
+        for(Address address : response.getAddresses()) {
+            System.out.printf(
+                    "[public IP]	%s, " +
+                    "[domain]	%s, " +
+                    "[allocation Id]	%s " +
+                    "[NIC Id]	%s\n",
+                    address.getPublicIp(),
+                    address.getDomain(),
+                    address.getAllocationId(),
+                    address.getNetworkInterfaceId());
+        }
 }
 
 //menu99
