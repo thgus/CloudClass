@@ -3,40 +3,53 @@ package aws;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.ec2.AmazonEC2;
+import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
+//instance 관리
+import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.Reservation;
+import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
-import com.amazonaws.services.ec2.model.Reservation;
-import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.StartInstancesRequest;
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 import com.amazonaws.services.ec2.model.RebootInstancesRequest;
 import com.amazonaws.services.ec2.model.RebootInstancesResult;
-import com.amazonaws.services.ec2.model.InstanceType;
+import com.amazonaws.services.ec2.model.MonitorInstancesRequest;
+import com.amazonaws.services.ec2.model.UnmonitorInstancesRequest;
+import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
+//region, zone
 import com.amazonaws.services.ec2.model.DescribeRegionsResult;
 import com.amazonaws.services.ec2.model.Region;
 import com.amazonaws.services.ec2.model.AvailabilityZone;
 import com.amazonaws.services.ec2.model.DescribeAvailabilityZonesResult;
+//image관리
 import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.DescribeImagesRequest;
-import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
-import com.amazonaws.services.ec2.model.CreateKeyPairResult;
-import com.amazonaws.services.ec2.model.DeleteKeyPairRequest;
-import com.amazonaws.services.ec2.model.DeleteKeyPairResult;
-import com.amazonaws.services.ec2.model.MonitorInstancesRequest;
-import com.amazonaws.services.ec2.model.UnmonitorInstancesRequest;
-import com.amazonaws.services.ec2.model.KeyPairInfo;
-import com.amazonaws.services.ec2.model.DescribeKeyPairsResult;
-import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 import com.amazonaws.services.ec2.model.CreateImageRequest;
 import com.amazonaws.services.ec2.model.CreateImageResult;
 import com.amazonaws.services.ec2.model.DeregisterImageRequest;
 import com.amazonaws.services.ec2.model.DeregisterImageResult;
+//keyPair관리
+import com.amazonaws.services.ec2.model.KeyPairInfo;
+import com.amazonaws.services.ec2.model.DescribeKeyPairsResult;
+import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
+import com.amazonaws.services.ec2.model.CreateKeyPairResult;
+import com.amazonaws.services.ec2.model.DeleteKeyPairRequest;
+import com.amazonaws.services.ec2.model.DeleteKeyPairResult;
+//Address관리
 import com.amazonaws.services.ec2.model.Address;
 import com.amazonaws.services.ec2.model.DescribeAddressesResult;
+//securityGroup관리
+import com.amazonaws.services.ec2.model.SecurityGroup;
+import com.amazonaws.services.ec2.model.DescribeSecurityGroupsRequest;
+import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
+import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
+import com.amazonaws.services.ec2.model.CreateSecurityGroupResult;
+import com.amazonaws.services.ec2.model.DeleteSecurityGroupRequest;
+import com.amazonaws.services.ec2.model.DeleteSecurityGroupResult;
 
 import java.util.Scanner;
 import java.util.List;
@@ -44,21 +57,10 @@ import java.util.Scanner;
 
 
 public class awsTest {
-/*
-* Cloud Computing, Data Computing Laboratory
-* Department of Computer Science
-* Chungbuk National University
-*/
 
 static AmazonEC2	ec2;
 
 private static void init() throws Exception {
-	
-	/*
-	* The ProfileCredentialsProvider will return your [default]
-	* credential profile by reading from the credentials file located at
-	* (~/.aws/credentials).
-	*/
 	
 	ProfileCredentialsProvider credentialsProvider = new ProfileCredentialsProvider();
 	try {
@@ -104,7 +106,8 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" 11. monitor instance		12. unmonitor instance		");
 		System.out.println(" 13. list Keypair		14. terminate instance		");
 		System.out.println(" 15. create image		16. delete image	 		");
-		System.out.println(" 17. describe address			 		");
+		System.out.println(" 17. list address		18. list security group 		");
+		System.out.println(" 19. create security group	20. delete security group 	");
 		System.out.println(" 					99. quit				");
 		System.out.println("-------------------------------------------------------------");
 	
@@ -186,6 +189,17 @@ public static void main(String[] args) throws Exception {
 				break;
 			case 17:
 				describeAddresses();
+				break;
+			case 18:
+				describeSecurityGroups();
+				break;
+			case 19:
+				createSecurityGroup();
+				break;
+			case 20:
+				System.out.print("Enter SecurityGroup_id: ");
+				id=id_string.nextLine();
+				deleteSecurityGroup(id);
 				break;
 			case 99:
 				quitmenu();
@@ -452,7 +466,7 @@ public static void deleteImage(String id){
         		System.out.printf("Successfully deleted image. id %s",id);
 		}
 		else{
-	  		System.out.printf("delet image if failed : (id) %s ",id);
+	  		System.out.printf("delet image is failed : (id) %s ",id);
 		}
 	}catch(Exception e){
 		System.out.printf("delete image is failed : (id) %s", id);	
@@ -475,6 +489,65 @@ public static void describeAddresses(){
                     address.getAllocationId(),
                     address.getNetworkInterfaceId());
         }
+}
+
+//menu18
+public static void describeSecurityGroups(){
+	System.out.println("Listing SecurityGroups....");
+	DescribeSecurityGroupsRequest request =new DescribeSecurityGroupsRequest();
+	DescribeSecurityGroupsResult response = ec2.describeSecurityGroups(request);
+	for(SecurityGroup group : response.getSecurityGroups()) {
+            System.out.printf(
+                "[id] %s," +
+                "[name] %s," +
+                "[vpc id] %s " +
+                "[description] %s\n",
+                group.getGroupId(),
+                group.getGroupName(),
+                group.getVpcId(),
+                group.getDescription());
+        }
+}
+
+//menu19
+public static void createSecurityGroup(){
+	Scanner scanner = new Scanner(System.in);
+	String name, desc, id;
+
+	System.out.print("Enter group_name: "); name=scanner.nextLine();
+	System.out.print("Enter group_VpnId: "); id=scanner.nextLine();
+	System.out.print("Enter group_desc: "); desc=scanner.nextLine();
+
+	try{	
+        CreateSecurityGroupRequest create_request = new CreateSecurityGroupRequest()
+               							 .withGroupName(name)
+              							 .withDescription(desc)
+      	     							 .withVpcId(id);
+        CreateSecurityGroupResult create_response = ec2.createSecurityGroup(create_request);
+	} catch (Exception e){
+		System.out.printf("create security group is failed : (name) %s", name);	
+	}
+}
+
+//menu20
+public static void deleteSecurityGroup(String id){
+	Scanner scanner = new Scanner(System.in);
+	int opinion;
+	try{	
+		System.out.printf("Do you really want to erase it? (yes :1 ,No :2) ");
+		opinion=scanner.nextInt();
+		if(opinion==1){
+     		   DeleteSecurityGroupRequest request = new DeleteSecurityGroupRequest()
+         								   .withGroupId(id);
+     		   DeleteSecurityGroupResult response = ec2.deleteSecurityGroup(request);
+        		System.out.printf("Successfully deleted security group. id %s",id);
+		}
+		else{
+	  		System.out.printf("deletsecuritygroup is failed : (id) %s ",id);
+		}
+	}catch(Exception e){
+		System.out.printf("delete security group is failed : (id) %s", id);	
+	}
 }
 
 //menu99
